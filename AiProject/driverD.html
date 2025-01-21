@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Driver Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: white;
+        height: 100vh;
+      }
+
+      .navbar {
+        background: #075c94;
+        padding: 10px 20px;
+        display: flex;
+        width: inherit;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+      }
+
+      .navbar h1 {
+        font-size: 24px;
+      }
+
+      .navbar button {
+        background: #d63031;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .navbar button:hover {
+        background: #c0392b;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: space-around;
+        background: #3072b4;
+        padding: 10px 0;
+        color: white;
+      }
+
+      .tabs button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 10px 15px;
+      }
+
+      .tabs button.active {
+        background: #075c94;
+        border-radius: 4px;
+      }
+
+      .tabs button:hover {
+        background: #058ae2;
+        border-radius: 4px;
+      }
+
+      .content {
+        padding: 20px;
+        background: #d4d4d4;
+        margin: 10px auto;
+        width: 80%;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .table th,
+      .table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .table th {
+        background: #075c94;
+        color: white;
+      }
+
+      .seat-info {
+        background: #fff;
+        padding: 20px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .seat-info p {
+        font-size: 18px;
+        margin: 10px 0;
+      }
+
+      #available-seats {
+        font-weight: bold;
+        color: #075c94;
+      }
+
+      #total-seats {
+        font-weight: bold;
+      }
+
+      /* Add new bus layout styles */
+      .bus-layout {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .bus-container {
+        position: relative;
+        width: 700px;
+        height: 450px;
+        margin: 0 auto;
+        padding: 40px;
+        background: #f5f6fa;
+        border-radius: 40px;
+        border: 2px solid #075c94;
+      }
+
+      .driver-section {
+        position: absolute;
+        top: 50%;
+        left: 40px;
+        transform: translateY(-50%);
+        width: 80px;
+        height: 120px;
+      }
+
+      .driver-section::after {
+        content: "👤";
+        color: white;
+        font-size: 24px;
+      }
+
+      .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-left: 150px;
+        padding: 20px;
+        width: calc(100% - 180px);
+      }
+
+      .seat {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .seat.available {
+        background: #2ecc71;
+      }
+
+      .seat.occupied {
+        background: #e74c3c;
+      }
+
+      .seat:hover {
+        transform: scale(1.1);
+      }
+
+      .bus-info {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .bus-info h3 {
+        color: #075c94;
+        margin-bottom: 10px;
+      }
+
+      .seat-legend {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 10px;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+      }
+
+      .legend-available {
+        background: #2ecc71;
+      }
+
+      .legend-occupied {
+        background: #e74c3c;
+      }
+
+      /* Add bus details */
+      .bus-front {
+        position: absolute;
+        left: -20px;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        background: #075c94;
+        border-radius: 20px 0 0 20px;
+      }
+
+      .bus-back {
+        position: absolute;
+        right: -20px;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+        background: #075c94;
+        border-radius: 0 20px 20px 0;
+      }
+
+      .bus-wheel {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: #333;
+        border-radius: 50%;
+        border: 5px solid #666;
+      }
+
+      .wheel-front {
+        bottom: -20px;
+        left: 100px;
+      }
+
+      .wheel-back {
+        bottom: -20px;
+        right: 100px;
+      }
+
+      /* Add sidebar styles */
+      .sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: #075c94;
+        padding-top: 60px;
+        transition: 0.3s;
+      }
+
+      #logout {
+        background: #d63031;
+        margin-top: auto;
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+      }
+
+      #logout:hover {
+        background: #c0392b;
+      }
+
+      .sidebar-item {
+        padding: 15px 25px;
+        display: flex;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .sidebar-item:hover {
+        background: #058ae2;
+      }
+
+      .sidebar-item.active {
+        background: #034c7c;
+        border-left: 4px solid white;
+      }
+
+      .sidebar-item i {
+        margin-right: 10px;
+        font-size: 20px;
+      }
+
+      /* Adjust main content area */
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        transition: 0.3s;
+      }
+
+      .content {
+        width: 95%;
+        margin: 20px auto;
+      }
+
+      /* Update navbar */
+      .navbar {
+        margin-left: 250px;
+        transition: 0.3s;
+      }
+
+      /* Add icons */
+      .material-icons {
+        font-size: 24px;
+        margin-right: 10px;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+        .sidebar-item span {
+          display: none;
+        }
+        .main-content,
+        .navbar {
+          margin-left: 70px;
+        }
+      }
+
+      /* Add row container style */
+      .seat-row {
+        display: flex;
+        gap: 40px; /* Space between left and right seats */
+        margin-bottom: 15px;
+      }
+
+      .seat-column {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .aisle {
+        width: 60px; /* Increased aisle width */
+      }
+
+      /* Remove unnecessary styles */
+      .seat-row,
+      .seat-column,
+      .aisle {
+        display: none;
+      }
+
+      .driver-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 20px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .summary-card {
+        text-align: center;
+        padding: 20px;
+        border-radius: 8px;
+        background: #f8f9fa;
+      }
+
+      .summary-card i {
+        font-size: 36px;
+        color: #075c94;
+        margin-bottom: 10px;
+      }
+
+      .summary-card h3 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .summary-card p {
+        font-size: 24px;
+        color: #075c94;
+        font-weight: bold;
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="sidebar-item active" id="seats-tab">
+        <i class="material-icons">airline_seat_recline_normal</i>
+        <span>Seats</span>
+      </div>
+      <div class="sidebar-item" id="stops-tab">
+        <i class="material-icons">location_on</i>
+        <span>Route Stops</span>
+      </div>
+      <div class="sidebar-item" id="class-timings-tab">
+        <i class="material-icons">schedule</i>
+        <span>Timings</span>
+      </div>
+      <div class="sidebar-item" id="logout">
+        <i class="material-icons">exit_to_app</i>
+        <span>Logout</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="navbar">
+        <h1>Driver Dashboard</h1>
+      </div>
+
+      <div class="driver-summary">
+        <div class="summary-card">
+          <i class="material-icons">airline_seat_recline_normal</i>
+          <h3>Available Seats</h3>
+          <p id="summary-available-seats">0</p>
+        </div>
+        <div class="summary-card">
+          <i class="material-icons">route</i>
+          <h3>Route Name</h3>
+          <p id="summary-route">Route A</p>
+        </div>
+        <div class="summary-card">
+          <i class="material-icons">schedule</i>
+          <h3>Next Departure</h3>
+          <p id="next-departure">4:00 PM</p>
+        </div>
+        <div class="summary-card">
+          <i class="material-icons">groups</i>
+          <h3>Total Students</h3>
+          <p id="total-students">0</p>
+        </div>
+      </div>
+
+      <div id="seats-content" class="content">
+        <h2>Seat Management</h2>
+        <div class="bus-layout">
+          <div class="bus-info">
+            <h3>Bus Seating Layout</h3>
+            <p>Total Seats: <span id="total-seats">16</span></p>
+            <p>Available Seats: <span id="available-seats">10</span></p>
+
+            <div class="seat-legend">
+              <div class="legend-item">
+                <div class="legend-color legend-available"></div>
+                <span>Available</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color legend-occupied"></div>
+                <span>Occupied</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bus-container">
+            <div class="bus-front"></div>
+            <div class="bus-back"></div>
+            <div class="bus-wheel wheel-front"></div>
+            <div class="bus-wheel wheel-back"></div>
+            <div class="driver-section"></div>
+            <div class="seats-grid" id="seats-grid">
+              <!-- Seats will be added dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="stops-content" class="content" style="display: none">
+        <h2>Route Stops</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stop</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="stops-table-body">
+            <!-- Stops will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="class-timings-content" class="content" style="display: none">
+        <h2>Timings</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stop</th>
+              <th>Timings</th>
+            </tr>
+          </thead>
+          <tbody id="timings-table-body">
+            <!-- Timings will be dynamically added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      const seatsTab = document.getElementById("seats-tab");
+      const stopsTab = document.getElementById("stops-tab");
+      const classTimingsTab = document.getElementById("class-timings-tab");
+
+      const seatsContent = document.getElementById("seats-content");
+      const stopsContent = document.getElementById("stops-content");
+      const classTimingsContent = document.getElementById(
+        "class-timings-content"
+      );
+
+      // Get user_id from localStorage
+      const driverId = localStorage.getItem("user_id");
+
+      // Update mock data for routes and stops
+      const mockRouteData = {
+        stops: [
+          "IUGC Main Campus",
+          "Maskan Chowrangi",
+          "Safari Park",
+          "Gulshan Chowrangi",
+          "Hassan Square",
+          "NIPA",
+          "Liaquatabad No. 10",
+          "Teen Hatti",
+          "PIB Colony",
+          "Jail Chowrangi",
+        ],
+        timings: {
+          morning: [
+            "7:00 AM", // IUGC
+            "7:15 AM", // Maskan
+            "7:25 AM", // Safari Park
+            "7:35 AM", // Gulshan Chowrangi
+            "7:45 AM", // Hassan Square
+            "7:55 AM", // NIPA
+            "8:10 AM", // Liaquatabad
+            "8:20 AM", // Teen Hatti
+            "8:30 AM", // PIB
+            "8:45 AM", // Jail Chowrangi
+          ],
+          evening: [
+            "4:00 PM", // IUGC
+            "4:15 PM", // Maskan
+            "4:25 PM", // Safari Park
+            "4:35 PM", // Gulshan Chowrangi
+            "4:45 PM", // Hassan Square
+            "4:55 PM", // NIPA
+            "5:10 PM", // Liaquatabad
+            "5:20 PM", // Teen Hatti
+            "5:30 PM", // PIB
+            "5:45 PM", // Jail Chowrangi
+          ],
+        },
+      };
+
+      // Mock seat data
+      let seatData = {
+        available_seats: 10,
+        total_seats: 16,
+      };
+
+      function loadRouteData() {
+        stopsTableBody.innerHTML = "";
+        timingsTableBody.innerHTML = "";
+
+        // Add stops to tables
+        mockRouteData.stops.forEach((stop, index) => {
+          // Add to stops table
+          const stopRow = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${stop}</td>
+              <td>${index === 0 ? "Starting Point" : "Pick/Drop Point"}</td>
+            </tr>`;
+          stopsTableBody.innerHTML += stopRow;
+
+          // Add to timings table
+          const timingRow = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${stop}</td>
+              <td>
+                <div>Morning: ${mockRouteData.timings.morning[index]}</div>
+                <div>Evening: ${mockRouteData.timings.evening[index]}</div>
+              </td>
+            </tr>`;
+          timingsTableBody.innerHTML += timingRow;
+        });
+
+        // Update seat information
+        document.getElementById("available-seats").textContent =
+          seatData.available_seats;
+        document.getElementById("total-seats").textContent =
+          seatData.total_seats;
+      }
+
+      function showTab(activeTab, activeContent) {
+        // Remove active class from all sidebar items
+        document
+          .querySelectorAll(".sidebar-item")
+          .forEach((item) => item.classList.remove("active"));
+
+        // Hide all content
+        document
+          .querySelectorAll(".content")
+          .forEach((content) => (content.style.display = "none"));
+
+        // Show active tab and content
+        activeTab.classList.add("active");
+        activeContent.style.display = "block";
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebarItems = document.querySelectorAll(".sidebar-item");
+
+        sidebarItems.forEach((item) => {
+          if (item.id === "logout") {
+            item.addEventListener("click", () => {
+              localStorage.removeItem("user_id");
+              localStorage.removeItem("role");
+              window.location.href = "login.html";
+            });
+          } else {
+            item.addEventListener("click", () => {
+              const contentId = item.id.replace("-tab", "-content");
+              const contentElement = document.getElementById(contentId);
+              if (contentElement) {
+                showTab(item, contentElement);
+              }
+            });
+          }
+        });
+
+        // Initialize seats and route data
+        initializeSeats();
+        loadRouteData();
+      });
+
+      function initializeSeats() {
+        const seatsGrid = document.getElementById("seats-grid");
+        if (!seatsGrid) return;
+
+        seatsGrid.innerHTML = "";
+        let seatCount = 0;
+
+        // Create 4x4 grid
+        for (let row = 0; row < 4; row++) {
+          for (let col = 0; col < 4; col++) {
+            seatCount++;
+            const seat = createSeat(seatCount);
+            seatsGrid.appendChild(seat);
+          }
+        }
+      }
+
+      function createSeat(number) {
+        const seat = document.createElement("div");
+        seat.className = `seat ${
+          number <= seatData.available_seats ? "available" : "occupied"
+        }`;
+        seat.textContent = number;
+        seat.onclick = () => toggleSeat(number);
+        return seat;
+      }
+
+      async function toggleSeat(seatNumber) {
+        const seats = document.querySelectorAll(".seat");
+        const seat = seats[seatNumber - 1];
+        if (!seat) return;
+
+        const currentlyAvailable = seat.classList.contains("available");
+        const userId = localStorage.getItem("user_id");
+
+        try {
+          // Update the UI first for better responsiveness
+          if (currentlyAvailable) {
+            seatData.available_seats--;
+            seat.classList.remove("available");
+            seat.classList.add("occupied");
+          } else {
+            seatData.available_seats++;
+            seat.classList.remove("occupied");
+            seat.classList.add("available");
+          }
+
+          document.getElementById("available-seats").textContent =
+            seatData.available_seats;
+          document.getElementById("summary-available-seats").textContent =
+            seatData.available_seats;
+
+          // Then update the server
+          const response = await fetch(
+            `http://localhost:5000/api/driver/${userId}/seats`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                seat_number: seatNumber,
+                status: currentlyAvailable ? "occupied" : "available",
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            // Revert changes if server update fails
+            if (currentlyAvailable) {
+              seatData.available_seats++;
+              seat.classList.remove("occupied");
+              seat.classList.add("available");
+            } else {
+              seatData.available_seats--;
+              seat.classList.remove("available");
+              seat.classList.add("occupied");
+            }
+            document.getElementById("available-seats").textContent =
+              seatData.available_seats;
+            document.getElementById("summary-available-seats").textContent =
+              seatData.available_seats;
+            throw new Error("Failed to update seat status");
+          }
+        } catch (error) {
+          console.error("Error updating seat:", error);
+          alert("Failed to update seat status. Please try again.");
+        }
+      }
+
+      // Add styles for the timings table
+      const styleSheet = document.createElement("style");
+      styleSheet.textContent = `
+        .table td div {
+          margin: 5px 0;
+          padding: 3px 6px;
+          border-radius: 4px;
+        }
+        
+        .table td div:first-child {
+          background: #e3f2fd;
+          color: #075c94;
+        }
+        
+        .table td div:last-child {
+          background: #fff3e0;
+          color: #e65100;
+        }
+      `;
+      document.head.appendChild(styleSheet);
+
+      // Check authentication
+      document.addEventListener("DOMContentLoaded", async function () {
+        const userId = localStorage.getItem("user_id");
+        const role = localStorage.getItem("role");
+
+        if (!userId || role !== "driver") {
+          window.location.href = "login.html";
+          return;
+        }
+
+        await loadDriverData(userId);
+      });
+
+      async function loadDriverData(driverId) {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/driver/${driverId}/route`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            // Update seat data
+            seatData = {
+              available_seats: parseInt(data.route.available_seats),
+              total_seats: parseInt(data.route.total_seats),
+            };
+
+            // Update summary cards
+            document.getElementById("summary-available-seats").textContent =
+              seatData.available_seats;
+            document.getElementById("summary-route").textContent =
+              data.route.name;
+            document.getElementById("next-departure").textContent =
+              data.route.morning_time;
+            document.getElementById("total-students").textContent =
+              data.route.total_students || "0";
+
+            // Initialize seats
+            initializeSeats();
+
+            // Load route data
+            loadRouteData(data.route_data);
+          } else {
+            console.error("Error loading driver data:", data.error);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      function loadRouteData(routeData) {
+        const stopsTableBody = document.getElementById("stops-table-body");
+        const timingsTableBody = document.getElementById("timings-table-body");
+
+        if (!stopsTableBody || !timingsTableBody) {
+          console.error("Table bodies not found");
+          return;
+        }
+
+        stopsTableBody.innerHTML = "";
+        timingsTableBody.innerHTML = "";
+
+        try {
+          // Parse string arrays back to actual arrays
+          const stops = JSON.parse(routeData.stops.replace(/'/g, '"'));
+          const morningTimings = JSON.parse(
+            routeData.morning_timings.replace(/'/g, '"')
+          );
+          const eveningTimings = JSON.parse(
+            routeData.evening_timings.replace(/'/g, '"')
+          );
+
+          stops.forEach((stop, index) => {
+            // Add to stops table
+            const stopRow = `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${stop}</td>
+                <td>${index === 0 ? "Starting Point" : "Pick/Drop Point"}</td>
+              </tr>`;
+            stopsTableBody.innerHTML += stopRow;
+
+            // Add to timings table
+            const timingRow = `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${stop}</td>
+                <td>
+                  <div>Morning: ${morningTimings[index]}</div>
+                  <div>Evening: ${eveningTimings[index]}</div>
+                </td>
+              </tr>`;
+            timingsTableBody.innerHTML += timingRow;
+          });
+
+          // Update seat information
+          document.getElementById("available-seats").textContent =
+            seatData.available_seats;
+          document.getElementById("total-seats").textContent =
+            seatData.total_seats;
+        } catch (error) {
+          console.error("Error parsing route data:", error);
+        }
+      }
+    </script>
+  </body>
+</html>

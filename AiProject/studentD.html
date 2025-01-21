@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: white;
+        height: 100vh;
+      }
+
+      .navbar {
+        background: #075c94;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+      }
+
+      .navbar h1 {
+        font-size: 24px;
+      }
+
+      .navbar button {
+        background: #d63031;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .navbar button:hover {
+        background: #c0392b;
+      }
+
+      .content {
+        padding: 20px;
+        background: #d4d4d4;
+        margin: 20px auto;
+        width: 80%;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .student-info {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .student-info h2 {
+        color: #333;
+      }
+
+      .student-info p {
+        font-size: 18px;
+        color: #555;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      .form-group button {
+        background: #075c94;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .form-group button:hover {
+        background: #058ae2;
+      }
+
+      .class-list {
+        margin-top: 20px;
+      }
+
+      .class-list h3 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .class-list ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .class-list ul li {
+        background: #f1f2f6;
+        padding: 10px;
+        margin-bottom: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      /* Add new timetable styles */
+      .timetable {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .timetable th,
+      .timetable td {
+        border: 1px solid #ddd;
+        padding: 15px;
+        text-align: center;
+      }
+
+      .timetable th {
+        background: #075c94;
+        color: white;
+        font-weight: bold;
+      }
+
+      .timetable td {
+        height: 100px;
+        vertical-align: top;
+      }
+
+      .class-card {
+        background: #e3f2fd;
+        padding: 8px;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        font-size: 14px;
+        border-left: 4px solid #075c94;
+      }
+
+      .class-card .class-name {
+        font-weight: bold;
+        color: #075c94;
+      }
+
+      .class-card .class-time {
+        color: #666;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+
+      .add-class-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #075c94;
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+
+      .add-class-btn:hover {
+        transform: scale(1.1);
+        background: #058ae2;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background: white;
+        width: 90%;
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        border-radius: 8px;
+        position: relative;
+      }
+
+      .close-btn {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+      }
+
+      .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .summary-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .summary-card i {
+        font-size: 36px;
+        color: #075c94;
+        margin-bottom: 10px;
+      }
+
+      .summary-card h3 {
+        margin-bottom: 10px;
+        color: #333;
+      }
+
+      .summary-card p {
+        font-size: 24px;
+        color: #075c94;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <h1>Student Dashboard</h1>
+      <button id="logout">Logout</button>
+    </div>
+
+    <div class="content">
+      <div class="student-info">
+        <h2 id="student-name">Student Name: John Doe</h2>
+        <p id="student-id">Student ID: 12345</p>
+      </div>
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <i class="material-icons">class</i>
+          <h3>Total Classes</h3>
+          <p id="total-classes">5</p>
+        </div>
+        <div class="summary-card">
+          <i class="material-icons">route</i>
+          <h3>Assigned Route</h3>
+          <p id="assigned-route">Route A</p>
+        </div>
+        <div class="summary-card">
+          <i class="material-icons">payment</i>
+          <h3>Fee Status</h3>
+          <p id="fee-status">Paid</p>
+        </div>
+      </div>
+
+      <table class="timetable">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+          </tr>
+        </thead>
+        <tbody id="timetable-body">
+          <!-- Will be populated by JavaScript -->
+        </tbody>
+      </table>
+
+      <button class="add-class-btn" id="add-class-btn">+</button>
+    </div>
+
+    <!-- Add class modal -->
+    <div id="add-class-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h3>Add New Class</h3>
+        <form id="class-form">
+          <div class="form-group">
+            <label for="class-name">Class Name:</label>
+            <input type="text" id="class-name" required />
+          </div>
+          <div class="form-group">
+            <label for="class-day">Day:</label>
+            <select id="class-day" required>
+              <option value="monday">Monday</option>
+              <option value="tuesday">Tuesday</option>
+              <option value="wednesday">Wednesday</option>
+              <option value="thursday">Thursday</option>
+              <option value="friday">Friday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="class-time">Time:</label>
+            <input type="time" id="class-time" required />
+          </div>
+          <button type="submit">Add Class</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Check authentication
+      document.addEventListener("DOMContentLoaded", async function () {
+        const userId = localStorage.getItem("user_id");
+        const role = localStorage.getItem("role");
+
+        if (!userId || role !== "student") {
+          window.location.href = "login.html";
+          return;
+        }
+
+        await loadStudentData(userId);
+      });
+
+      async function loadStudentData(studentId) {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/student/${studentId}/timetable`
+          );
+          const data = await response.json();
+
+          if (response.ok) {
+            // Parse string arrays back to actual arrays/objects
+            const classes = JSON.parse(data.classes.replace(/'/g, '"'));
+            const timeSlots = JSON.parse(data.time_slots.replace(/'/g, '"'));
+            const days = JSON.parse(data.days.replace(/'/g, '"'));
+
+            console.log("Classes:", classes); // Debug log
+            console.log("Time Slots:", timeSlots); // Debug log
+            console.log("Days:", days); // Debug log
+
+            // Update student info
+            document.getElementById(
+              "student-name"
+            ).textContent = `Student Name: ${data.name}`;
+            document.getElementById(
+              "student-id"
+            ).textContent = `Student ID: ${data.student_id}`;
+
+            // Update summary cards
+            document.getElementById("total-classes").textContent =
+              classes.length;
+            document.getElementById("assigned-route").textContent =
+              data.assigned_route || "Not Assigned";
+            document.getElementById("fee-status").textContent =
+              data.fee_status || "Unknown";
+
+            // Generate timetable
+            generateTimetable(classes, timeSlots, days);
+          } else {
+            console.error("Error loading student data:", data.error);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      function generateTimetable(classes, timeSlots, days) {
+        const timetableBody = document.getElementById("timetable-body");
+        if (!timetableBody) {
+          console.error("Timetable body not found");
+          return;
+        }
+
+        timetableBody.innerHTML = "";
+        console.log("Generating timetable..."); // Debug log
+
+        timeSlots.forEach((time) => {
+          const row = document.createElement("tr");
+
+          // Add time column
+          const timeCell = document.createElement("td");
+          timeCell.textContent = time;
+          row.appendChild(timeCell);
+
+          // Add day columns
+          days.forEach((day) => {
+            const cell = document.createElement("td");
+            // Find all classes for this day and time
+            const classesForSlot = classes.filter(
+              (c) =>
+                c.day.toLowerCase() === day.toLowerCase() && c.timing === time
+            );
+
+            if (classesForSlot.length > 0) {
+              console.log(
+                `Found classes for ${day} at ${time}:`,
+                classesForSlot
+              ); // Debug log
+            }
+
+            classesForSlot.forEach((classInfo) => {
+              const classDiv = document.createElement("div");
+              classDiv.className = "class-card";
+              classDiv.innerHTML = `
+                <div class="class-name">${classInfo.name}</div>
+                <div class="class-time">${classInfo.timing}</div>
+              `;
+              cell.appendChild(classDiv);
+            });
+
+            row.appendChild(cell);
+          });
+
+          timetableBody.appendChild(row);
+        });
+      }
+
+      // Modal handling
+      const modal = document.getElementById("add-class-modal");
+      const addBtn = document.getElementById("add-class-btn");
+      const closeBtn = document.querySelector(".close-btn");
+
+      addBtn.onclick = () => (modal.style.display = "block");
+      closeBtn.onclick = () => (modal.style.display = "none");
+
+      window.onclick = (event) => {
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Handle adding new class
+      document.getElementById("class-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const className = document.getElementById("class-name").value;
+        const classDay = document.getElementById("class-day").value;
+        const classTime = document.getElementById("class-time").value;
+
+        // Implementation of adding new class
+        console.log("Adding new class:", className, classDay, classTime);
+        modal.style.display = "none";
+        e.target.reset();
+      });
+
+      // Handle logout
+      document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("role");
+        window.location.href = "login.html";
+      });
+    </script>
+  </body>
+</html>
