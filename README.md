@@ -38,7 +38,7 @@ The Transport Management System is a web-based application designed to streamlin
 2. Install required Python packages:
 
    ```bash
-   pip install -r requirements.txt
+      pip install flask flask-cors pymongo dataset
    ```
 
 3. Run the Flask application:
